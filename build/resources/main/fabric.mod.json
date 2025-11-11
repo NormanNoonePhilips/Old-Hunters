@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "old_hunters",
+  "version": "1.0-SNAPSHOT",
+  "name": "Old Hunters",
+  "description": "Descriprion WIP",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/old_hunters/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "org.old_hunters.client.Old_huntersDataGenerator"
+    ],
+    "client": [
+      "org.old_hunters.client.Old_huntersClient"
+    ],
+    "main": [
+      "org.old_hunters.Old_hunters"
+    ]
+  },
+  "mixins": [
+    "old_hunters.mixins.json",
+    {
+      "config": "old_hunters.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "fabric": "*",
+    "minecraft": "1.19.2"
+  }
+}
