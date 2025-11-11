@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.13-SNAPSHOT'
+    id 'fabric-loom' version '1.2-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -10,92 +10,116 @@ base {
     archivesName = project.archives_base_name
 }
 
+repositories {
+    mavenCentral()
+
+    maven {
+        name = "Fabric"
+        url = 'https://maven.fabricmc.net/'
+    }
+
+    // Modrinth Maven
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
+
+    // Shedaniel's Maven (Cloth Config)
+    maven {
+        name = "Shedaniel"
+        url = "https://maven.shedaniel.me/"
+    }
+
+    // GeckoLib
+    maven {
+        name = "GeckoLib"
+        url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
+    }
+
+    // Kosmx's Maven (Player Animator)
+    maven {
+        name = "Kosmx"
+        url = "https://maven.kosmx.dev/"
+    }
+
+    // JitPack (SmartBrainLib)
+    maven {
+        name = "JitPack"
+        url = "https://jitpack.io"
+    }
+
+    // CurseMaven (fallback)
+    maven {
+        name = "CurseMaven"
+        url = "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
+dependencies {
+    // Minecraft and Fabric Loader
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Fabric API
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // Cloth Config
+    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    // Trinkets
+    modImplementation("dev.emi:trinkets:${project.trinkets_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    // Player Animator (required by SpellEngine)
+    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${project.player_animator_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    // GeckoLib
+    modImplementation("software.bernie.geckolib:geckolib-fabric-1.19:${project.geckolib_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    // SpellEngine Ecosystem - Using Modrinth
+    modImplementation("maven.modrinth:spell-engine:${project.spell_engine_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+    modImplementation("maven.modrinth:spell-power:${project.spell_power_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+    modImplementation("maven.modrinth:projectile-damage-attribute:${project.projectile_damage_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    // SmartBrainLib from JitPack
+    modImplementation("com.github.Tslat:SmartBrainLib:${project.smartbrainlib_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+}
+
 loom {
     splitEnvironmentSourceSets()
 
     mods {
-        "old_hunters" {
+        old_hunters {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
         }
     }
 }
 
-repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
-
-    mavenCentral()
-    maven { url = 'https://maven.fabricmc.net/' }
-
-    // Modrinth for SpellEngine ecosystem
-    maven {
-        name = 'Modrinth'
-        url = 'https://api.modrinth.com/maven'
-    }
-
-    // Cloth Config
-    maven {
-        url = 'https://maven.shedaniel.me/'
-    }
-
-    // GeckoLib
-    maven {
-        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
-    }
-
-    // Player Animator
-    maven {
-        url = "https://maven.kosmx.dev/"
-    }
-
-    // Curse Maven (backup for some mods)
-    maven {
-        url = "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-
-    // JitPack for mclib (required by GeckoLib)
-    maven { url = 'https://jitpack.io' }
-}
-
-dependencies {
-    // To change the versions see the gradle.properties file
-    // Minecraft and Fabric basics
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    // SpellEngine ecosystem - Using CurseForge IDs
-    modImplementation "curse.maven:spell-engine-651593:${project.spell_engine_file_id}"
-    modImplementation "curse.maven:spell-power-647101:${project.spell_power_file_id}"
-    modImplementation "curse.maven:projectile-damage-attribute-633203:${project.projectile_damage_file_id}"
-
-    // Player Animator (required by SpellEngine)
-    modImplementation "curse.maven:player-animator-658587:${project.player_animator_file_id}"
-
-    // Required dependencies
-    modImplementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
-    modImplementation "curse.maven:trinkets-313113:${project.trinkets_file_id}"
-
-    // GeckoLib for entity animations
-    modImplementation "software.bernie.geckolib:geckolib-fabric-1.19:${project.geckolib_version}"
-
-    // SmartBrainLib for advanced pet AI
-    modImplementation "curse.maven:smartbrainlib-634062:${project.smartbrainlib_file_id}"
-
-}
-
 processResources {
     inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
     inputs.property "loader_version", project.loader_version
+
     filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
@@ -105,15 +129,12 @@ processResources {
     }
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 17
+
 tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        it.options.release = targetJavaVersion
+        it.options.release.set(targetJavaVersion)
     }
 }
 
@@ -122,32 +143,24 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
+
     withSourcesJar()
 }
 
 jar {
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+    from("LICENSE.txt") {
+        rename { "${it}_${project.base.archivesName.get()}" }
     }
 }
 
-// configure the maven publication
 publishing {
     publications {
-        create("mavenJava", MavenPublication) {
-            artifactId = project.archives_base_name
+        mavenJava(MavenPublication) {
             from components.java
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
         // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
     }
 }
